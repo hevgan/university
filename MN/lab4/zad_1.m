@@ -2,75 +2,78 @@ clear
 clc
 Index = 175854;
 N0 = mod(Index,10);
-N1 = mod(N0-1,4)+1; %N1 = 4
-%ex1
+N1 = mod(N0-1,4)+1; 
+
+[title_approx,title_diffs,x_label,y_label,bis_suffix,sec_suffix,file_path] = nameSetup();
+
+
+ex1(title_approx,title_diffs,x_label,y_label,bis_suffix,sec_suffix,file_path);
+ex2(title_approx,title_diffs,x_label,y_label,bis_suffix,sec_suffix,file_path);
+ex3(title_approx,title_diffs,x_label,y_label,bis_suffix,sec_suffix,file_path);
+
+
+
+
+function ex1(title_approx,title_diffs,x_label,y_label,bis_suffix,sec_suffix,file_path)
+
 params = [1,60000,10^-3];
 
-[bisec_xvect,   bisec_xdif,     bisec_fx,   bisec_it_cnt]   = bisectionMethod(params,@function1_1);
-[secant_xvect2, secant_xdif2,   secant_fx2, secant_it_cnt2] = secantMethod(params,@function1_1);
+[bis_x_vect,   bis_x_dif,     bis_fx,   bis_it_cnt] = bisectionMethod(params,@function1_1);
+[sec_x_vect, sec_x_dif,   sec_fx, sec_it_cnt] = secantMethod(params,@function1_1);
 
-%fprintf("bisectionMethod %d iterations\n", bisec_it_cnt);
-%fprintf("secantMethod %d iterations\n", secant_it_cnt2);
-fprintf("max parameter count ≈ %f \n", (bisec_xvect(end)));
-plot(bisec_xdif);
-exportgraphics(gcf, 'plots\1.png')
-plot(secant_xdif2);
-exportgraphics(gcf, 'plots\2.png')
+fprintf("max parameter count ≈ %f \n", (bis_x_vect(end)));
 
-plot(bisec_fx);
-exportgraphics(gcf, 'plots\3.png')
+shortPlot(bis_x_dif, title_diffs, bis_suffix, x_label, y_label, gcf, file_path, '1_1.png');
+shortPlot(sec_x_dif, title_diffs, sec_suffix, x_label, y_label, gcf, file_path, '1_2.png');
+shortPlot(bis_fx, title_approx, bis_suffix, x_label, y_label, gcf, file_path, '1_3.png');
+shortPlot(sec_fx, title_approx, sec_suffix, x_label, y_label, gcf, file_path, '1_4.png');
 
-plot(secant_fx2);
-exportgraphics(gcf, 'plots\4.png')
 
-%ex2
+end
+
+function ex2 (title_approx,title_diffs,x_label,y_label,bis_suffix,sec_suffix,file_path)
+
 params = [1,50,10^-12];
 
-%rename the variables
-[a,b,c,d] =  bisectionMethod(params,@function1_2);
-[e,f,g,h] =  secantMethod(params,@function1_2);
-%fprintf("bisectionMethod %d iterations\n", d);
-%fprintf("secantMethod %d iterations\n", h);
-fprintf("angular frequency ≈ %f[rad/s] \n", (a(end)));
+[bis_x_vect_2,   bis_x_dif_2,     bis_fx_2,   bis_it_cnt_2] =  bisectionMethod(params,@function1_2);
+[sec_x_vect_2, sec_x_dif_2,   sec_fx_2, sec_it_cnt_2] =  secantMethod(params,@function1_2);
 
+fprintf("angular frequency ≈ %f[rad/s] \n", (bis_x_vect_2(end)));
 
-plot(b);
-exportgraphics(gcf, 'plots\5.png')
+shortPlot(bis_x_dif_2, title_diffs, bis_suffix, x_label, y_label, gcf, file_path, '2_1.png');
+shortPlot(sec_x_dif_2, title_diffs, sec_suffix, x_label, y_label, gcf, file_path, '2_2.png');
+shortPlot(bis_fx_2, title_approx, bis_suffix, x_label, y_label, gcf, file_path, '2_3.png');
+shortPlot(sec_fx_2, title_approx, sec_suffix, x_label, y_label, gcf, file_path, '2_4.png');
 
-plot(f);
-exportgraphics(gcf, 'plots\6.png')
+end
 
-plot(c);
-exportgraphics(gcf, 'plots\7.png')
-plot(g);
-exportgraphics(gcf, 'plots\8.png')
+function ex3 (title_approx,title_diffs,x_label,y_label,bis_suffix,sec_suffix,file_path)
 
-
-
-%ex3
 params = [0,50,10^-12];
 
-[i,j,k,l] =  bisectionMethod(params,@function1_3);
-[m,n,o,p] =  secantMethod(params,@function1_3);
-%fprintf("bisectionMethod %d iterations\n", l);
-%fprintf("secantMethod %d iterations\n", p);
-fprintf("time to reach 750m/s ≈ %f[s] \n", (i(end)));
+[bis_x_vect_3,   bis_x_dif_3,     bis_fx_3,   bis_it_cnt_3] =  bisectionMethod(params,@function1_3);
+[sec_x_vect_3, sec_x_dif_3,   sec_fx_3, sec_it_cnt_3] =  secantMethod(params,@function1_3);
+fprintf("time to reach 750m/s ≈ %f[s] \n", (bis_x_vect_3(end)));
+
+shortPlot(bis_x_dif_3, title_diffs, bis_suffix, x_label, y_label, gcf, file_path, '3_1.png');
+shortPlot(sec_x_dif_3, title_diffs, sec_suffix, x_label, y_label, gcf, file_path, '3_2.png');
+shortPlot(bis_fx_3, title_approx, bis_suffix, x_label, y_label, gcf, file_path, '3_3.png');
+shortPlot(sec_fx_3, title_approx, sec_suffix, x_label, y_label, gcf, file_path, '3_4.png');
+
+end
+
+function shortPlot(data, title_diffs, sec_suffix, x_label, y_label, gcf, file_path, name)
+
+set(gcf,'Position',[10 100 900 600])
+plot(data);
+title(title_diffs + sec_suffix);
+xlabel(x_label);
+ylabel(y_label);
+full_file_path = strcat(file_path, name);
+exportgraphics(gcf, full_file_path);
 
 
-
-
-plot(j);
-exportgraphics(gcf, 'plots\9.png')
-
-exportgraphics(gcf, 'plots\10.png')
-plot(n);
-
-exportgraphics(gcf, 'plots\11.png')
-plot(k);
-exportgraphics(gcf, 'plots\12.png')
-plot(o);
-
-
+end
 
 function result=function1_1(params)
     
@@ -100,11 +103,11 @@ function result=function1_3(params)
     q = 2700;
     u = 2000;
     t = params(1);
+    
     ins_log = m0/(m0-q*t);
     result = u*log(ins_log)-g*t-v;
 
 end
-
 
 function [xvect,xdif,fx,it_cnt]=bisectionMethod(params,func)
     l = params(1);
@@ -160,8 +163,17 @@ function [xvect,xdif,fx,it_cnt]=secantMethod(params,func)
 end
 
 %legend
-%• xvect - wektor kolejnych wartości przybliżonego rozwiązania,
-%• xdif - wektor różnić pomiędzy kolejnymi wartościami przybliżonego rozwiązania,
-%np. xdif(1) = abs(xvect(2)-xvect(1));
-%• fx - wektor wartości funkcji dla kolejnych elementów wektora xvect,
-%• it_cnt - liczba iteracji wykonanych przy poszukiwaniu miejsca zerowego.
+%xvect - wektor kolejnych wartości przybliżonego rozwiązania,
+%xdif - wektor różnić pomiędzy kolejnymi wartościami przybliżonego rozwiązania,
+%fx - wektor wartości funkcji dla kolejnych elementów wektora xvect,
+%it_cnt - liczba iteracji wykonanych przy poszukiwaniu miejsca zerowego.
+
+function [title_approx,title_diffs,x_label,y_label,bis_suffix,sec_suffix,file_path ]=nameSetup()
+title_approx = "value of approximation in corelation to iteration count ";
+title_diffs = "difference between subsequent x values in corelation to iteration count ";
+x_label = "iteration no. ";
+y_label = "difference in value ";
+bis_suffix = " for bisection method";
+sec_suffix = "for secant-based method";
+file_path = "plots/";
+end
