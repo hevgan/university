@@ -1,0 +1,8 @@
+Zgodnie z przewidywaniami metoda Gaussa-Seidla jest najszybsza.
+Druga w kolejności jest metoda Jacobiego (jest ona około 3 razy wolnijesza od metody Gaussa-Seidla co wydaje się być
+oczywiste zważywszy na fakt, iż metoda Gaussa_Seidla jest wprawdzie ulepszoną metodą Jacobiego).
+zdecydowanie najgorsza jest metoda wbudowana(około 2 razy wolniejsza od metody Jacobiego).
+
+Powyższe wnioski i obserwacje dotyczą obliczeń dokonywanych na macierzach w formatach sparse. 
+Różnica w obliczeniach staje się diametralnie większa w przypadku stosowania macierzy w formatach full, wtedy 
+czas obliczeń zwiększa nawet o 4 rzędy wielkości.
