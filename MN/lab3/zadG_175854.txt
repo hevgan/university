@@ -1,0 +1,3 @@
+Metody iteracyjne (Gaussa-Siedla i Jacobiego) nie zbiegaja sie dla danych z filtra Dielektrycznego. 
+Czas dojscia do wartosci stopujacej (breakera) rownego 10^8 wykazuje
+mniejsze tempo zmiany tendencji w metodzie Jacobiego co potwierdza dominację (prędkościową) metody Gaussa-Siedla.
