@@ -26,7 +26,7 @@ function ex1(K)
     [XX,YY]=meshgrid(linspace(0,100,101),linspace(0,100,101));
 
     %create fig
-    ex1(idx) = figure('Position', [0, 0, 1800, 900]);
+    ex1(idx) = figure('Position', [0, 0, 1200, 700]);
 
     %plot rover route
     subplot(2,2,1);
@@ -110,7 +110,7 @@ function ex2(a,b)
     end
 
     %create fig
-    ex2 = figure('Position', [0, 0, 1200, 600]);
+    ex2 = figure('Position', [0, 0, 900, 500]);
     
     %trigonometric diff
     subplot(2,1,1);
