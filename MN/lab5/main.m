@@ -20,7 +20,7 @@ function ex1(K)
     for idx = 1:numel(K)
 
     %generate terrain (sample placement)
-    [x,y,f] = lazik(K(idx));
+    [x,y,f, xp, yp] = lazik(K(idx));
 
     %generate rover routee
     [XX,YY]=meshgrid(linspace(0,100,101),linspace(0,100,101));
@@ -30,17 +30,17 @@ function ex1(K)
 
     %plot rover route
     subplot(2,2,1);
-    plot(x,y,'-o','linewidth',1);
+    plot(xp,yp,'-o','linewidth',1);
     title("rover route");
-    ylabel("x [m]");
-    xlabel("y [m]");
+    ylabel("y [m]");
+    xlabel("x [m]");
 
     %plot sample placement
     subplot(2,2,2);
     plot3(x,y,f,'o');
     title("values from collected samples");
-    ylabel("x [m]");
-    xlabel("y [m]");
+    ylabel("y [m]");
+    xlabel("m [m]");
     zlabel("measured radiation value [Sv]");
 
     %trygonmetric interpolation
@@ -49,8 +49,8 @@ function ex1(K)
     subplot(2,2,3);
     surf(XX,YY,FF)
     title('trygonometric interpolation');
-    ylabel("x [m]");
-    xlabel("y [m]");
+    ylabel("y [m]");
+    xlabel("x [m]");
     zlabel("interpolated radiation value [Sv]");
 
     %plynomial interpolation
@@ -59,8 +59,8 @@ function ex1(K)
     subplot(2,2,4);
     surf(XX,YY,FF)
     title('polynomial interpolation');
-    ylabel("x [m]");
-    xlabel("y [m]");
+    ylabel("y [m]");
+    xlabel("x [m]");
     zlabel("interpolated radiation value [Sv]");
     
     %export plots
