@@ -19,10 +19,8 @@ if __name__ == "__main__":
 
             splines_x, splines_y = getSplineInterpolationValues(
                 chosen_x, chosen_y, point_count)
+            
 
-            displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x,
-                               splines_y, profile, point_count, ind, interpolationPlotType.both)
-            displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x,
-                               splines_y, profile, point_count, ind, interpolationPlotType.splines)
-            displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x,
-                               splines_y, profile, point_count, ind, interpolationPlotType.lagrange)
+            for val, type in enumerate(interpolationPlotType):
+                displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x, splines_y, profile, point_count, ind, type)
+
