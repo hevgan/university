@@ -16,8 +16,7 @@ plt.rcParams.update({'figure.max_open_warning': 0})
 
 default_num_of_lagrange_interpolation_points = 20
 
-elevation_profiles = [r'MountEverest', r'SpacerniakGdansk',
-                      r'Obiadek', r'WielkiKanionKolorado', r'100']
+elevation_profiles = [r'WielkiKanionKolorado'] #, r'SpacerniakGdansk',r'Obiadek', r'WielkiKanionKolorado', r'100'] #MountEverest
 
 
 class interpolationPlotType(Enum):
@@ -44,11 +43,15 @@ def displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, spline
     fig = plt.figure()
     plt.plot(x, y, label='actual terrain')
 
+
+    #TODO refactor this ugly shit
     if plot_type == interpolationPlotType.both:  # both
         plt.plot(lagrange_x, lagrange_y, label='lagrange',
                  linestyle=":", c='orange')
         plt.plot(splines_x, splines_y, label='cubic splines',
                  linestyle=":", c='black')
+        #plt.scatter(splines_x, splines_y)
+
         folder = "both"
     elif plot_type == interpolationPlotType.lagrange:  # lagrange
         plt.plot(lagrange_x, lagrange_y, label='lagrange',
@@ -57,6 +60,7 @@ def displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, spline
     elif plot_type == interpolationPlotType.splines:  # splines
         plt.plot(splines_x, splines_y, label='cubic splines',
                  linestyle=":", c='black')
+        #plt.scatter(splines_x, splines_y)
         folder = "splines"
 
     plt.scatter(chosen_x, chosen_y, label='interpolation points', c='green')
@@ -70,15 +74,15 @@ def displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, spline
     fig.set_figwidth(7)
 
     plt.savefig(f"./plots/{folder}/{name}/{ind}-num_of_points-{point_count}")
+    plt.show()
     plt.clf()
-   # plt.show()
 
 
 def getEvenlyDistributedPoints(x, y, num_of_points=default_num_of_lagrange_interpolation_points):
 
     assert len(x) == len(y)
 
-    points = np.round(np.linspace(0, len(x) - 1, num_of_points)).astype(int)
+    points = np.round(np.linspace(0, len(x) - 1, num_of_points+1, endpoint=True)).astype(int)
     points = [(x[i], y[i]) for i in points]
 
     chosen_x = [points[i][0] for i in range(len(points))]
@@ -87,14 +91,17 @@ def getEvenlyDistributedPoints(x, y, num_of_points=default_num_of_lagrange_inter
     return chosen_x, chosen_y, points
 
 
-def getLagrangeInterpolationValues(x, y, interpolating_points_count, data_length):
+def getLagrangeInterpolationValues(x, y, interpolating_points_count, full_x_data):
 
     #interpolating_points_count = interpolating_points_count or default_num_of_lagrange_interpolation_points
     #interpolating_points_count = interpolating_points_count if interpolating_points_count % 2 == 0 else interpolating_points_count+1
-    start = x[0]
-    stop = x[-1]
+    #start = x[0]
+    #stop = x[-1]
+    data_length = len(full_x_data)
     interpolating_points_count = data_length
-    result_x = np.linspace(start, stop, num=interpolating_points_count)
+    #result_x = np.linspace(start, stop, num=interpolating_points_count, endpoint=True)
+    result_x = full_x_data
+    #ic(result_x)
     result_y = [0] * interpolating_points_count
 
     for n in range(interpolating_points_count):
@@ -208,26 +215,32 @@ def cubicSplineInterpolation(x, y):
     return vect_x
 
 
-def getSplineInterpolationValues(x, y, number_of_points_between_interpolated_nodes):
-
+def getSplineInterpolationValues(x, y, full_x_series):
+    
     vect = cubicSplineInterpolation(x, y)
     results_y = []
     result_x = []
-
     number_of_intervals = len(x)-1
 
     for i in range(number_of_intervals):
 
-        start = x[i]
-        stop = x[i+1]
-        sub_interval = np.linspace(
-            start, stop, number_of_points_between_interpolated_nodes)
-
+        start = full_x_series[full_x_series.index(x[i])]
+        stop = full_x_series[full_x_series.index(x[i+1])]
+        sub_interval = np.arange(start, stop+1, step=1 )
+        #print(sub_interval)
+        #number_of_points_between_interpolated_nodes
+        #start = full_x_series.index(x[i])
+        #stop = full_x_series.index(x[i+1])
+        #sub_interval = full_x_series[start:stop]
+        #ic(full_x_series[start], full_x_series[stop])
+        #ic(len(sub_interval))
         for element in sub_interval:
-            ind = i*4
-            a0, b0, c0, d0 = vect[ind], vect[ind+1], vect[ind+2], vect[ind+3]
-            h = float(element - start)
-            results_y.append(a0 + b0 * h + c0*(h ** 2) + d0*(h ** 3))
-            result_x.append(element)
+            #below line can be deleted if the arange/linspace func would exclude the edge points 
+            if float(element) in full_x_series and element not in result_x:
+                ind = i*4
+                a0, b0, c0, d0 = vect[ind], vect[ind+1], vect[ind+2], vect[ind+3]
+                h = float(element - start)
+                results_y.append(a0 + b0 * h + c0*(h ** 2) + d0*(h ** 3))
+                result_x.append(element)
 
     return result_x, results_y
