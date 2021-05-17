@@ -1,3 +1,4 @@
+from executing.executing import Executing
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,9 +15,12 @@ import itertools as it
 from enum import Enum
 plt.rcParams.update({'figure.max_open_warning': 0})
 
+fig = plt.figure(figsize=(20,10))
+
+
 default_num_of_lagrange_interpolation_points = 20
 
-elevation_profiles = [r'WielkiKanionKolorado'] #, r'SpacerniakGdansk',r'Obiadek', r'WielkiKanionKolorado', r'100'] #MountEverest
+elevation_profiles = [r'WielkiKanionKolorado', r'SpacerniakGdansk',r'Obiadek', r'WielkiKanionKolorado', r'100', r'MountEverest']
 
 
 class interpolationPlotType(Enum):
@@ -38,55 +42,64 @@ def loadTerraindata(name):
     return x, y
 
 
-def displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x, splines_y, name, point_count, ind, plot_type):
+def displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x, splines_y, filename, point_count, ind, plot_type):
 
-    fig = plt.figure()
-    plt.plot(x, y, label='actual terrain')
-
-
-    #TODO refactor this ugly shit
-    if plot_type == interpolationPlotType.both:  # both
-        plt.plot(lagrange_x, lagrange_y, label='lagrange',
-                 linestyle=":", c='orange')
-        plt.plot(splines_x, splines_y, label='cubic splines',
-                 linestyle=":", c='black')
-        #plt.scatter(splines_x, splines_y)
-
-        folder = "both"
-    elif plot_type == interpolationPlotType.lagrange:  # lagrange
-        plt.plot(lagrange_x, lagrange_y, label='lagrange',
-                 linestyle=":", c='orange')
-        folder = "lagrange"
-    elif plot_type == interpolationPlotType.splines:  # splines
-        plt.plot(splines_x, splines_y, label='cubic splines',
-                 linestyle=":", c='black')
-        #plt.scatter(splines_x, splines_y)
-        folder = "splines"
-
-    plt.scatter(chosen_x, chosen_y, label='interpolation points', c='green')
-    plt.legend()
-    plt.title(
-        f"interpolated heights for \"{name}.csv\" for {point_count} points")
-    plt.xlabel("distance [m]")
-    plt.ylabel("height [m]")
-
-    fig.set_figwidth(4)
-    fig.set_figwidth(7)
-
-    plt.savefig(f"./plots/{folder}/{name}/{ind}-num_of_points-{point_count}")
-    plt.show()
     plt.clf()
 
+    if isinstance(plot_type, interpolationPlotType):
+
+        lagrange_settings = {'color': 'black',
+                             'linestyle': ":", 'label': 'lagrange'}
+        splines_settings = {'color': 'red',
+                            'linestyle': ":", 'label': 'cubic splines'}
+        interpolation_points_settings = {
+            'color': 'green', 'linestyle': "^", 'label': 'interpolation points'}
+        terrain_settings = {'color': ..., 'label': 'terrain', 'style': ... }
+
+        if plot_type.name == 'both':
+            plt.plot(lagrange_x, lagrange_y, label=lagrange_settings['label'],
+                     linestyle=lagrange_settings['linestyle'], c=lagrange_settings['color'])
+            plt.plot(splines_x, splines_y, label=splines_settings['label'],
+                     linestyle=splines_settings['linestyle'], c=splines_settings['color'])
+        elif plot_type.name == 'lagrange':
+            plt.plot(lagrange_x, lagrange_y, label=lagrange_settings['label'],
+                     linestyle=lagrange_settings['linestyle'], c=lagrange_settings['color'])
+        elif plot_type.name == 'splines':
+            plt.plot(splines_x, splines_y, label=splines_settings['label'],
+                     linestyle=splines_settings['linestyle'], c=splines_settings['color'])
+        else:
+            raise Exception(
+                f"plot type no recognized in file: {__name__}.py, function: {displayAquiredData.__name__}")
+
+        plt.scatter(chosen_x, chosen_y,
+                    label=interpolation_points_settings['label'], c=interpolation_points_settings['color'])
+        plt.plot(x, y, label=terrain_settings['label'])
+
+        plt.title(f"interpolated heights for \"{filename}.csv\" for {point_count} points")
+        plt.xlabel("distance [m]")
+        plt.ylabel("height [m]")
+        plt.legend()
+        folder = f'plots/{plot_type.name}'
+        plt.savefig(f"{folder}/{filename}/{ind}-num_of_points-{point_count}")
+        #plt.show()
+
+    else:
+        raise TypeError(f"interpolation type is not a valid type")
+
+   
 
 def getEvenlyDistributedPoints(x, y, num_of_points=default_num_of_lagrange_interpolation_points):
 
-    assert len(x) == len(y)
+    assert num_of_points > 4
 
-    points = np.round(np.linspace(0, len(x) - 1, num_of_points+1, endpoint=True)).astype(int)
+    points = np.round(np.linspace(
+        0, len(x) - 1, num_of_points+1, endpoint=True)).astype(int)
     points = [(x[i], y[i]) for i in points]
 
-    chosen_x = [points[i][0] for i in range(len(points))]
-    chosen_y = [points[i][1] for i in range(len(points))]
+    num_of_points = range(len(points))
+
+    chosen_x = [points[i][0] for i in num_of_points]
+    chosen_y = [points[i][1] for i in num_of_points]
 
     return chosen_x, chosen_y, points
 
@@ -97,11 +110,13 @@ def getLagrangeInterpolationValues(x, y, interpolating_points_count, full_x_data
     #interpolating_points_count = interpolating_points_count if interpolating_points_count % 2 == 0 else interpolating_points_count+1
     #start = x[0]
     #stop = x[-1]
-    data_length = len(full_x_data)
-    interpolating_points_count = data_length
+    #data_length = len(full_x_data)
     #result_x = np.linspace(start, stop, num=interpolating_points_count, endpoint=True)
-    result_x = full_x_data
-    #ic(result_x)
+    #result_x = full_x_data
+    # ic(result_x)
+
+    interpolating_points_count = len(full_x_data)  # = data_length
+
     result_y = [0] * interpolating_points_count
 
     for n in range(interpolating_points_count):
@@ -110,14 +125,14 @@ def getLagrangeInterpolationValues(x, y, interpolating_points_count, full_x_data
             product = 1.0
             for j in range(len(x)):
                 if (i != j):
-                    product *= (result_x[n]-x[j])
+                    product *= (full_x_data[n]-x[j])
                     product /= (x[i]-x[j])
             sum = sum + product * y[i]
         result_y[n] = sum
 
-    assert interpolating_points_count == len(result_y) == len(result_x)
+    assert interpolating_points_count == len(result_y) == len(full_x_data)
 
-    return result_x, result_y
+    return full_x_data, result_y
 
 
 def pivotingLU(A, b):
@@ -216,7 +231,7 @@ def cubicSplineInterpolation(x, y):
 
 
 def getSplineInterpolationValues(x, y, full_x_series):
-    
+
     vect = cubicSplineInterpolation(x, y)
     results_y = []
     result_x = []
@@ -226,21 +241,15 @@ def getSplineInterpolationValues(x, y, full_x_series):
 
         start = full_x_series[full_x_series.index(x[i])]
         stop = full_x_series[full_x_series.index(x[i+1])]
-        sub_interval = np.arange(start, stop+1, step=1 )
-        #print(sub_interval)
-        #number_of_points_between_interpolated_nodes
-        #start = full_x_series.index(x[i])
-        #stop = full_x_series.index(x[i+1])
-        #sub_interval = full_x_series[start:stop]
-        #ic(full_x_series[start], full_x_series[stop])
-        #ic(len(sub_interval))
+        sub_interval = np.arange(start, stop+1, step=1)
+
         for element in sub_interval:
-            #below line can be deleted if the arange/linspace func would exclude the edge points 
+            # below line can be deleted if the arange/linspace func would exclude the edge points
             if float(element) in full_x_series and element not in result_x:
                 ind = i*4
-                a0, b0, c0, d0 = vect[ind], vect[ind+1], vect[ind+2], vect[ind+3]
+                a, b, c, d = vect[ind], vect[ind+1], vect[ind+2], vect[ind+3]
                 h = float(element - start)
-                results_y.append(a0 + b0 * h + c0*(h ** 2) + d0*(h ** 3))
+                results_y.append(a + b * h + c*(h ** 2) + d*(h ** 3))
                 result_x.append(element)
 
     return result_x, results_y

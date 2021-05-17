@@ -1,17 +1,16 @@
 from funcs import *
 
-if __name__ == "__main__":
-    sizes = [6, 8, 10, 12, 14, 16, 18, 20, 22,
-             24, 26, 28, 30, 32, 34, 36, 38, 40, 42]
-    #sizes = np.linspace(6,25, 20)
-    #sizes = map(lambda k: int(k), sizes)
-    for profile in elevation_profiles:
-        x, y = loadTerraindata(profile)
-        for ind, point_count in enumerate(sizes):
-            print(point_count, profile)
-            data_length = len(x)
+def main():
 
-            #point_count = point_count+1 if point_count % 2 else point_count
+    sizes = np.arange(6, 20, step = 2)
+
+    for profile in elevation_profiles:
+
+        x, y = loadTerraindata(profile)
+
+        for ind, point_count in enumerate(sizes):
+
+            print('terrain: ',profile, ' \t', 'points: ', point_count)
 
             chosen_x, chosen_y, chosen_points = getEvenlyDistributedPoints(
                 x, y, point_count)
@@ -22,13 +21,23 @@ if __name__ == "__main__":
             splines_x, splines_y = getSplineInterpolationValues(
                 chosen_x, chosen_y, x)
 
-
             assert(int(x[-1]) == int(lagrange_x[-1]) == int(splines_x[-1]) )
             assert len(splines_x) == len(splines_y) == len(lagrange_x) == len(lagrange_y) == len(x) == len(y)
             assert list(splines_x) == list(x) == list(lagrange_x)
-            displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x, splines_y, profile, point_count, ind, interpolationPlotType.both)
 
             for val, type in enumerate(interpolationPlotType):
-                ...
-                #displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x, splines_y, profile, point_count, ind, type)
+                displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x, splines_y, profile, point_count, ind, type)
 
+            # difference_lagrange = np.subtract(y, lagrange_y)
+            # difference_splines = np.subtract(y, splines_y)
+            # cumsum_lagrange = np.cumsum(difference_lagrange)
+            # cumsum_splines = np.cumsum(difference_splines)
+            # max_diff_lagrange = np.max(difference_lagrange)
+            # max_diff_splines = np.max(difference_splines)
+
+            # print(cumsum_lagrange[-1], cumsum_splines[-1], max_diff_lagrange, max_diff_splines)
+            
+            
+
+if __name__ == "__main__":
+   main()
