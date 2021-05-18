@@ -1,0 +1,1 @@
+Lepiej jest korzystać z aproksymacji, interpolacja na danych obarczonych błędem numerycznym dodatkowo je spotęguje. 
