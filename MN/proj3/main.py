@@ -27,11 +27,8 @@ def main():
             assert len(splines_x) == len(splines_y) == len(lagrange_x) == len(lagrange_y) == len(x) == len(y)
             assert list(splines_x) == list(x) == list(lagrange_x)
 
-            tmp_error_lagrange = RMS(y, lagrange_y)
-            tmp_error_splines = RMS(y, splines_y)
-
-            errors[ind]['lagrange_RMS'] = tmp_error_lagrange
-            errors[ind]['splines_RMS'] = tmp_error_splines
+            errors[ind]['lagrange_RMS'] = RMS(y, lagrange_y)
+            errors[ind]['splines_RMS'] = RMS(y, splines_y)
 
             print(errors[ind])
 
