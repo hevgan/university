@@ -253,3 +253,13 @@ def getSplineInterpolationValues(x, y, full_x_series):
                 result_x.append(element)
 
     return result_x, results_y
+
+def RMS(x1, x2):
+    n = len(x1)
+
+    nominator = 0 
+    
+    for i in range(n):
+        nominator += ((x1[i])-(x2[i]))**2
+
+    return np.sqrt((nominator)/n)
