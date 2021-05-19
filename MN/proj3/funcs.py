@@ -1,26 +1,18 @@
-from executing.executing import Executing
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import os
-import sys
-import subprocess
 from icecream import ic
-import itertools
-import random
 import numpy as np
-import numpy.polynomial.polynomial as poly
 import matplotlib.pyplot as plt
-import itertools as it
 from enum import Enum
+
 plt.rcParams.update({'figure.max_open_warning': 0})
 
-fig = plt.figure(figsize=(20,10))
-
+fig = plt.figure(figsize=(10,5))
 
 default_num_of_lagrange_interpolation_points = 20
 
-elevation_profiles = [r'WielkiKanionKolorado', r'SpacerniakGdansk',r'Obiadek', r'WielkiKanionKolorado', r'100', r'MountEverest']
+elevation_profiles = [r'WielkiKanionKolorado' , r'SpacerniakGdansk',r'Obiadek', r'WielkiKanionKolorado', r'100', r'MountEverest']
 
 
 class interpolationPlotType(Enum):
@@ -40,6 +32,26 @@ def loadTerraindata(name):
     y = list(map(lambda data: int(float(data)), y))
 
     return x, y
+
+def errorPlot(error_vector_lagrange, error_vector_splines, interpolated_points, point_count, name, ind):
+    plt.clf()
+    #error plotting
+    error_lagrange_vect = error_vector_lagrange
+    error_splines_vect = error_vector_splines
+    plt.semilogy(interpolated_points, error_lagrange_vect, label="lagrange_eror_RMS")
+    plt.semilogy(interpolated_points, error_splines_vect, label="splines_eror_RMS")
+    plt.scatter(interpolated_points, error_lagrange_vect)
+    plt.scatter(interpolated_points, error_splines_vect)
+
+    plt.title(f"error value in corelation to interpolation points count for {name}")
+    plt.ylabel("error value")
+    plt.xlabel("number of interpolation nodes")
+    plt.xticks(interpolated_points)
+    plt.legend()
+    folder = f'plots/errors'
+    plt.savefig(f"{folder}/{name}/{ind}-num_of_points-{point_count}")   
+
+
 
 
 def displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x, splines_y, filename, point_count, ind, plot_type):
@@ -70,6 +82,9 @@ def displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, spline
         else:
             raise Exception(
                 f"plot type no recognized in file: {__name__}.py, function: {displayAquiredData.__name__}")
+        
+
+
 
         plt.scatter(chosen_x, chosen_y,
                     label=interpolation_points_settings['label'], c=interpolation_points_settings['color'])
