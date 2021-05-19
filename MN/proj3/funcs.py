@@ -8,11 +8,12 @@ from enum import Enum
 
 plt.rcParams.update({'figure.max_open_warning': 0})
 
-fig = plt.figure(figsize=(10,5))
+fig = plt.figure(figsize=(10, 5))
 
 default_num_of_lagrange_interpolation_points = 20
 
-elevation_profiles = [r'WielkiKanionKolorado' , r'SpacerniakGdansk',r'Obiadek', r'WielkiKanionKolorado', r'100', r'MountEverest']
+elevation_profiles = [r'WielkiKanionKolorado', r'SpacerniakGdansk',
+                      r'Obiadek', r'WielkiKanionKolorado', r'100', r'MountEverest']
 
 
 class interpolationPlotType(Enum):
@@ -33,31 +34,31 @@ def loadTerraindata(name):
 
     return x, y
 
+
 def errorPlot(error_vector_lagrange, error_vector_splines, interpolated_points, point_count, name, ind):
     plt.clf()
-    #error plotting
     error_lagrange_vect = error_vector_lagrange
     error_splines_vect = error_vector_splines
-    plt.semilogy(interpolated_points, error_lagrange_vect, label="lagrange_eror_RMS")
-    plt.semilogy(interpolated_points, error_splines_vect, label="splines_eror_RMS")
+    plt.semilogy(interpolated_points, error_lagrange_vect,
+                 label="lagrange_eror_RMS")
+    plt.semilogy(interpolated_points, error_splines_vect,
+                 label="splines_eror_RMS")
     plt.scatter(interpolated_points, error_lagrange_vect)
     plt.scatter(interpolated_points, error_splines_vect)
 
-    plt.title(f"error value in corelation to interpolation points count for {name}")
+    plt.title(
+        f"error value in corelation to interpolation points count for {name}")
     plt.ylabel("error value")
     plt.xlabel("number of interpolation nodes")
     plt.xticks(interpolated_points)
     plt.legend()
     folder = f'plots/errors'
-    plt.savefig(f"{folder}/{name}/{ind}-num_of_points-{point_count}")   
-
-
+    plt.savefig(f"{folder}/{name}/{ind}-num_of_points-{point_count}")
 
 
 def displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, splines_x, splines_y, filename, point_count, ind, plot_type):
 
     plt.clf()
-
     if isinstance(plot_type, interpolationPlotType):
 
         lagrange_settings = {'color': 'black',
@@ -66,7 +67,7 @@ def displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, spline
                             'linestyle': ":", 'label': 'cubic splines'}
         interpolation_points_settings = {
             'color': 'green', 'linestyle': "^", 'label': 'interpolation points'}
-        terrain_settings = {'color': ..., 'label': 'terrain', 'style': ... }
+        terrain_settings = {'color': ..., 'label': 'terrain', 'style': ...}
 
         if plot_type.name == 'both':
             plt.plot(lagrange_x, lagrange_y, label=lagrange_settings['label'],
@@ -82,26 +83,21 @@ def displayAquiredData(x, y, chosen_x, chosen_y,  lagrange_x, lagrange_y, spline
         else:
             raise Exception(
                 f"plot type no recognized in file: {__name__}.py, function: {displayAquiredData.__name__}")
-        
-
-
 
         plt.scatter(chosen_x, chosen_y,
                     label=interpolation_points_settings['label'], c=interpolation_points_settings['color'])
         plt.plot(x, y, label=terrain_settings['label'])
 
-        plt.title(f"interpolated heights for \"{filename}.csv\" for {point_count} points")
+        plt.title(
+            f"interpolated heights for \"{filename}.csv\" for {point_count} points")
         plt.xlabel("distance [m]")
         plt.ylabel("height [m]")
         plt.legend()
         folder = f'plots/{plot_type.name}'
         plt.savefig(f"{folder}/{filename}/{ind}-num_of_points-{point_count}")
-        #plt.show()
-
     else:
         raise TypeError(f"interpolation type is not a valid type")
 
-   
 
 def getEvenlyDistributedPoints(x, y, num_of_points=default_num_of_lagrange_interpolation_points):
 
@@ -120,16 +116,6 @@ def getEvenlyDistributedPoints(x, y, num_of_points=default_num_of_lagrange_inter
 
 
 def getLagrangeInterpolationValues(x, y, interpolating_points_count, full_x_data):
-
-    #interpolating_points_count = interpolating_points_count or default_num_of_lagrange_interpolation_points
-    #interpolating_points_count = interpolating_points_count if interpolating_points_count % 2 == 0 else interpolating_points_count+1
-    #start = x[0]
-    #stop = x[-1]
-    #data_length = len(full_x_data)
-    #result_x = np.linspace(start, stop, num=interpolating_points_count, endpoint=True)
-    #result_x = full_x_data
-    # ic(result_x)
-
     interpolating_points_count = len(full_x_data)  # = data_length
 
     result_y = [0] * interpolating_points_count
@@ -269,11 +255,12 @@ def getSplineInterpolationValues(x, y, full_x_series):
 
     return result_x, results_y
 
+
 def RMS(x1, x2):
     n = len(x1)
 
-    nominator = 0 
-    
+    nominator = 0
+
     for i in range(n):
         nominator += ((x1[i])-(x2[i]))**2
 
